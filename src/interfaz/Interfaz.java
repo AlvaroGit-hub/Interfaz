@@ -17,6 +17,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.beans.Statement;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -64,6 +66,8 @@ public class Interfaz extends JFrame {
 		lblContraseña.setBounds(37, 135, 97, 42);
 		miPanel.add(lblContraseña);
 		
+		
+		
 		textUsuario = new JTextField();
 		textUsuario.setBounds(158, 98, 232, 20);
 		miPanel.add(textUsuario);
@@ -72,6 +76,84 @@ public class Interfaz extends JFrame {
 		passwordField = new JPasswordField();
 		passwordField.setBounds(158, 149, 232, 20);
 		miPanel.add(passwordField);
+		passwordField.addKeyListener(new KeyListener() {
+
+			public void keyPressed(KeyEvent arg0) {
+				if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+					String userName = textUsuario.getText();
+					String passWord = passwordField.getText();
+					
+					String bd="swing_pruebas";
+					String url ="jdbc:mysql://localhost:3306/" + bd;
+					
+					String usuario = "root";
+					String password = null;
+
+					java.sql.Connection conn= null;
+					
+					java.sql.Statement stmt = null;
+					
+					ResultSet rs = null;
+					
+					
+						try {
+							Class.forName("com.mysql.cj.jdbc.Driver");
+							
+							conn=DriverManager.getConnection(url, usuario, password);
+							
+							stmt= conn.createStatement();
+							
+							
+							
+							String query= "Select user,pass From datos where user='"+ userName + "' && pass='" +passWord+ "'";
+							
+							rs=((java.sql.Statement) stmt).executeQuery(query);
+							
+							String user="";
+							String pass="";
+							
+							while(rs.next()) {
+								user=rs.getString("user");
+								pass=rs.getString("pass");
+							}
+							
+							if(userName.equals(user) && passWord.equals(pass)) {
+								System.out.println("Login exitoso");
+								 dispose();
+								 
+				                 JOptionPane.showMessageDialog(null, "Bienvenido\n"
+				                    + "Has ingresado correctamente al sistema",   "Mensaje de bienvenida",
+				                 JOptionPane.INFORMATION_MESSAGE);
+							}else {
+								System.out.println("Nombre o contraseña incorrectos");
+								 
+				                 JOptionPane.showMessageDialog(null, "Acceso denegado\n"
+				                    + "Ingresa correctamente los datos", "Acceso denegado",
+				                 JOptionPane.ERROR_MESSAGE);
+							}
+							
+						} catch (ClassNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					
+				}
+				}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}});
 		
 		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -109,36 +191,40 @@ public class Interfaz extends JFrame {
 						
 						stmt= conn.createStatement();
 						
+						if(!userName.equals("") && !passWord.equals("")) {
+							
 						
+							String query= "Select user,pass From datos where user='"+ userName + "' && pass='" +passWord+ "'";
 						
-						String query= "Select user,pass From datos where user='"+ userName + "' && pass='" +passWord+ "'";
+							rs=((java.sql.Statement) stmt).executeQuery(query);
 						
-						rs=((java.sql.Statement) stmt).executeQuery(query);
+							String user="";
+							String pass="";
 						
-						String user="";
-						String pass="";
+							while(rs.next()) {
+								user=rs.getString("user");
+								pass=rs.getString("pass");
+							}
 						
-						while(rs.next()) {
-							user=rs.getString("user");
-							pass=rs.getString("pass");
-						}
-						
-						if(userName.equals(user) && passWord.equals(pass)) {
-							System.out.println("Login exitoso");
-							 dispose();
+							if(userName.equals(user) && passWord.equals(pass)) {
+								System.out.println("Login exitoso");
+								dispose();
+								 
+				                 JOptionPane.showMessageDialog(null, "Bienvenido\n"
+				                		 + "Has ingresado correctamente al sistema",   "Mensaje de bienvenida",
+				                		 JOptionPane.INFORMATION_MESSAGE);
+							}else {
+								System.out.println("Nombre o contraseña incorrectos");
 							 
-			                 JOptionPane.showMessageDialog(null, "Bienvenido\n"
-			                    + "Has ingresado correctamente al sistema",   "Mensaje de bienvenida",
-			                 JOptionPane.INFORMATION_MESSAGE);
+								JOptionPane.showMessageDialog(null, "Acceso denegado\n"
+										+ "Ingresa correctamente los datos", "Acceso denegado",
+										JOptionPane.ERROR_MESSAGE);
+							}
 						}else {
-							System.out.println("Nombre o contraseña incorrectos");
-							dispose();
-							 
-			                 JOptionPane.showMessageDialog(null, "Acceso denegado\n"
-			                    + "Ingresa correctamente los datos", "Acceso denegado",
-			                 JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, "Acceso denegado\n"
+									+ "Ingresa correctamente los datos", "Acceso denegado",
+									JOptionPane.ERROR_MESSAGE);
 						}
-						
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -152,8 +238,6 @@ public class Interfaz extends JFrame {
 		});
 			
 		setVisible(true);
-		
 	}
-
 }
 
